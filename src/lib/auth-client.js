@@ -5,3 +5,9 @@ export const authClient = createAuthClient({
 })
 
 export const { signIn, signUp, useSession } = createAuthClient()
+
+/**
+ * gign up :register:create account: first time user
+ * sing in :login:login user: already registered user
+ * sign out :logout
+ */
