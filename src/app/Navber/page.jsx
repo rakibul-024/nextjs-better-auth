@@ -1,10 +1,15 @@
 'use client';
 import { useState } from "react";
 import { Link, Button } from "@heroui/react";
+import { useSession } from "@/lib/auth-client";
 
 export default function Navber() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+
+  const {data:session} = useSession();
+
+  console.log(' user session form the navbar',session);
 
   const Navlinks= <>
    <ul className="hidden items-center gap-4 md:flex">
@@ -23,10 +28,21 @@ export default function Navber() {
 
 
 
-const NavBtn =<>
-  <Link href="#">Login</Link>
-          <Button>Sign Up</Button>
-</>
+const NavBtn = 
+  <>
+    {session?.user ? (
+      <>
+        <span> Welcome {session.user?.name}</span>
+        <Button>Sign Out</Button>
+      </>
+    ) : (
+      <>
+        <Link href="#">Login</Link>
+        <Button>Sign Up</Button>
+      </>
+    )}
+  </>
+
 
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
