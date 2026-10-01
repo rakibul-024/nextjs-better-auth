@@ -1,15 +1,23 @@
 'use client';
 import { useState } from "react";
-import { Link, Button } from "@heroui/react";
+import { Link, Button,Spinner } from "@heroui/react";
 import { signOut, useSession } from "@/lib/auth-client";
 
 export default function Navber() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 
-  const {data:session} = useSession();
+  const {data: session, pending} = useSession();
 
   console.log(' user session form the navbar',session);
+  if (pending) {
+    return (
+      <div className="flex flex-col items-center gap-2">
+        <Spinner size="xl" />
+        <span className="text-xs text-muted">Loading...</span>
+      </div>
+    );
+  }
 
   const Navlinks= <>
    <ul className="hidden items-center gap-4 md:flex">
