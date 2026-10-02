@@ -22,15 +22,15 @@ export default function Navber() {
   const Navlinks= <>
    <ul className="hidden items-center gap-4 md:flex">
           <li>
-            <Link href="#">Features</Link>
+            <Link href="/Services">Services</Link>
           </li>
           <li>
-            <Link href="#" className="font-medium text-accent" aria-current="page">
+            <Link href="/Dashboard">
               Dashboard
             </Link>
           </li>
           <li>
-            <Link href="#">Pricing</Link>
+            <Link href="/Pricing">Pricing</Link>
           </li>
         </ul></>
 

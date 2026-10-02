@@ -16,20 +16,16 @@ const SignInPage = () => {
 
 
 
-   const { data: resData, error } = await signIn.email({
-      email: data.email,       
-      password: data.password, 
-       callbackURL: "/",
-    });
+ const { data: resData, error } = await signIn.email({
+            email: data.email,
+            password: data.password,
+            rememberMe: true,
+            callbackURL: '/'
+        })
 
-    console.log( resData, error );
+        console.log('after submit', resData, error);
 
      }
-
-   
-
-
-
 
     return (
         <div>

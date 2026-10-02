@@ -2,7 +2,9 @@
 import React, {useState} from 'react';
 import {Eye, EyeSlash} from "@gravity-ui/icons";
 import {Button, Description, FieldError, Form, Input, InputGroup, Label, TextField} from "@heroui/react";
-import { signUp } from '@/lib/auth-client';
+import { signIn, signUp } from '@/lib/auth-client';
+
+
 
 
 const SignUpPage = () => {
@@ -25,6 +27,15 @@ const { data: resData, error } = await signUp.email({
     console.log( resData, error );
 
   };
+
+  const handleGoogleSignIn = async () => {
+    const resData = await signIn.social({
+         provider: 'google',
+    })
+   
+    console.log('after google sign in', resData);
+  };
+
     return (
         <div>
          <Form className="flex w-96 flex-col gap-4" onSubmit={onSubmit}>
@@ -102,6 +113,7 @@ const { data: resData, error } = await signUp.email({
     </TextField>
       <div className="flex gap-2">
         <Button type="submit">
+
           {/* <Check /> */}
           Submit
         </Button>
@@ -109,9 +121,12 @@ const { data: resData, error } = await signUp.email({
           Reset
         </Button>
       </div>
-    </Form>
-
-        </div>
+      </Form>
+             <p>or</p>
+      <Button onClick={handleGoogleSignIn} >
+  Sign in with Google
+</Button>
+      </div>
     );
 };
 
