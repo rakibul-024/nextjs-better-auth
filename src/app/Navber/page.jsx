@@ -30,7 +30,7 @@ export default function Navber() {
             </Link>
           </li>
           <li>
-            <Link href="/Pricing">Pricing</Link>
+            <Link href="/Profile">Profile</Link>
           </li>
         </ul></>
 
