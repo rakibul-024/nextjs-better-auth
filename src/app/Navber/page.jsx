@@ -19,38 +19,39 @@ export default function Navber() {
     );
   }
 
-  const Navlinks= <>
-   <ul className="hidden items-center gap-4 md:flex">
-          <li>
-            <Link href="/Services">Services</Link>
-          </li>
-          <li>
-            <Link href="/Dashboard">
-              Dashboard
-            </Link>
-          </li>
+  const Navlinks = (
+    <>
+      <ul className="hidden items-center gap-4 md:flex">
+        <li>
+          <Link href="/Service">Services</Link>
+        </li>
+        <li>
+          <Link href="/Dashboard">Dashboard</Link>
+        </li>
+        {session?.user && (
           <li>
             <Link href="/Profile">Profile</Link>
           </li>
-        </ul></>
+        )}
+      </ul>
+    </>
+  );
 
-
-
-const NavBtn = 
-  <>
-    {session?.user ? (
-      <>
-        <span> Welcome {session.user?.name}</span>
-        <Button onClick={() => signOut()}>Sign Out</Button>
-      </>
-    ) : (
-      <>
-        <Link href="./sign-in">Sign In</Link>
-        <Link href="./sign-up">Sign Up</Link>
-      </>
-    )}
-  </>
-
+  const NavBtn = (
+    <>
+      {session?.user ? (
+        <>
+          <span> Welcome {session.user?.name}</span>
+          <Button onClick={() => signOut()}>Sign Out</Button>
+        </>
+      ) : (
+        <>
+          <Link href="./sign-in">Sign In</Link>
+          <Link href="./sign-up">Sign Up</Link>
+        </>
+      )}
+    </>
+  );
 
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
@@ -102,11 +103,22 @@ const NavBtn =
       </header>
       {isMenuOpen && (
         <div className="border-t border-separator md:hidden">
-         {Navlinks}
-            <li className="mt-4 flex flex-col gap-2 border-t border-separator pt-4">
-            {NavBtn}
+          <ul className="flex flex-col gap-2 px-6 py-4">
+            <li>
+              <Link href="/Services">Services</Link>
             </li>
-          
+            <li>
+              <Link href="/Dashboard">Dashboard</Link>
+            </li>
+            {session?.user && (
+              <li>
+                <Link href="/Profile">Profile</Link>
+              </li>
+            )}
+            <li className="mt-4 border-t border-separator pt-4">
+              {NavBtn}
+            </li>
+          </ul>
         </div>
       )}
     </nav>
