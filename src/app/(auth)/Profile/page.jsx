@@ -1,11 +1,70 @@
-import React from 'react';
+"use client";
 
-const ProfilePage = () => {
-    return (
-        <div>
-           <h2>Update your profile</h2>
-        </div>
-    );
-};
+import { FloppyDisk } from "@gravity-ui/icons";
+import { updateUser } from "@/lib/auth-client";
+import {
+  Button,
+  Description,
+  FieldError,
+  FieldGroup,
+  Fieldset,
+  Form,
+  Input,
+  Label,
+  TextField,
+} from "@heroui/react";
 
-export default ProfilePage;
+export default function ProfilePage() {
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const userData = Object.fromEntries(formData.entries());
+    console.log("data from the profile form", userData);
+
+    const { data, error } = await updateUser({
+      name: userData.name,
+    });
+
+    if (error) {
+      console.error("Failed to update profile name", error);
+      return;
+    }
+
+    console.log("after profile update", data);
+  };
+
+  return (
+    <Form className="w-full max-w-96" onSubmit={handleUpdateUser}>
+      <Fieldset>
+        <Fieldset.Legend>Profile Settings</Fieldset.Legend>
+        <Description>Update your profile information.</Description>
+        <FieldGroup>
+          <TextField
+            isRequired
+            name="name"
+            validate={(value) => {
+              if (value.length < 3) {
+                return "Name must be at least 3 characters";
+              }
+
+              return null;
+            }}
+          >
+            <Label>Name</Label>
+            <Input placeholder="John Doe" />
+            <FieldError />
+          </TextField>
+        </FieldGroup>
+        <Fieldset.Actions>
+          <Button type="submit">
+            <FloppyDisk />
+            Save changes
+          </Button>
+          <Button type="reset" variant="secondary">
+            Cancel
+          </Button>
+        </Fieldset.Actions>
+      </Fieldset>
+    </Form>
+  );
+}
