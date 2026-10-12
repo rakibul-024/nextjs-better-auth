@@ -26,7 +26,7 @@ export default function Navber() {
           <Link href="/Service">Services</Link>
         </li>
         <li>
-          <Link href="/Dashboard">Dashboard</Link>
+          <Link href="/dashboard">Dashboard</Link>
         </li>
         {session?.user && (
           <li>
@@ -89,7 +89,7 @@ export default function Navber() {
           </button>
           <div className="flex items-center gap-3">
             {/* <Logo /> */}
-            <p className="font-bold">ACME</p>
+            <Link href="/" className="font-bold">ACME</Link>
           </div>
         </div>
          
@@ -108,7 +108,7 @@ export default function Navber() {
               <Link href="/Services">Services</Link>
             </li>
             <li>
-              <Link href="/Dashboard">Dashboard</Link>
+              <Link href="/dashboard">Dashboard</Link>
             </li>
             {session?.user && (
               <li>
