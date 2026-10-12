@@ -28,12 +28,18 @@ const { data: resData, error } = await signUp.email({
 
   };
 
-  const handleGoogleSignIn = async () => {
-    const resData = await signIn.social({
-         provider: 'google',
-    })
-   
-    console.log('after google sign in', resData);
+  const handleSocialSignIn = async (provider) => {
+    const { data, error } = await signIn.social({
+      provider,
+      callbackURL: "/",
+    });
+
+    if (error) {
+      console.error(`Failed to sign in with ${provider}`, error);
+      return;
+    }
+
+    console.log(`Signed in with ${provider}`, data);
   };
 
     return (
@@ -123,9 +129,14 @@ const { data: resData, error } = await signUp.email({
       </div>
       </Form>
              <p>or</p>
-      <Button onClick={handleGoogleSignIn} >
-  Sign in with Google
-</Button>
+      <div className="flex gap-2">
+        <Button onPress={() => handleSocialSignIn("google")}>
+          Sign in with Google
+        </Button>
+        <Button onPress={() => handleSocialSignIn("github")}>
+          Sign in with GitHub
+        </Button>
+      </div>
       </div>
     );
 };

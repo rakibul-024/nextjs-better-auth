@@ -8,6 +8,20 @@ import React from 'react';
 const SignInPage = () => {
   const [isVisible, setIsVisible] = useState(false);
 
+  const handleSocialSignIn = async (provider) => {
+    const { data, error } = await signIn.social({
+      provider,
+      callbackURL: "/",
+    });
+
+    if (error) {
+      console.error(`Failed to sign in with ${provider}`, error);
+      return;
+    }
+
+    console.log(`Signed in with ${provider}`, data);
+  };
+
      const onSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -99,6 +113,15 @@ const SignInPage = () => {
         </Button>
       </div>
     </Form>
+    <p>or</p>
+    <div className="flex gap-2">
+      <Button onPress={() => handleSocialSignIn("google")}>
+        Sign in with Google
+      </Button>
+      <Button onPress={() => handleSocialSignIn("github")}>
+        Sign in with GitHub
+      </Button>
+    </div>
 
         </div>
     );

@@ -13,15 +13,19 @@ export const auth = betterAuth({
   google:{
     clientId:process.env.BETTER_AUTH_GEOGLE_CLIENT_ID,
     clientSecret: process.env.BETTER_AUTH_GEOGLE_SECRET ,
+  },
+  github:{
+    clientId:process.env.BETTER_AUTH_GITHUB_CLIENT_ID,
+    clientSecret: process.env.BETTER_AUTH_GITHUB_SECRET,
   }
   },
- account: {
-  accountLinking: {
-    enabled: true,
-    trustedProviders: ["google"],
-    requireLocalEmailVerified: false,
-  },
-},
+account: {
+		accountLinking: {
+			enabled: true,
+			trustedProviders: ["github", "google"],
+			requireLocalEmailVerified: false,
+		}
+	},
   database: mongodbAdapter(db, {
     // Optional: if you don't provide a client, database transactions won't be enabled.
     client
