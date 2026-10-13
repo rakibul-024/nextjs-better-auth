@@ -2,7 +2,7 @@
 import { sendVerificationEmail, signIn } from "@/lib/auth-client";
 import {useState} from "react";
 import {Eye, EyeSlash} from "@gravity-ui/icons";
-import {Button, Description, FieldError, Form, Input, InputGroup, Label, TextField, toast} from "@heroui/react";
+import {Button, Description, FieldError, Form, Input, InputGroup, Label, Link, TextField, toast} from "@heroui/react";
 import React from 'react';
 
 const SignInPage = () => {
@@ -146,7 +146,8 @@ const SignInPage = () => {
       </div>
     </Form>
     <p>or</p>
-    <div className="flex gap-2">
+    <p>   Forgot Password <Link href="/forgot-password" className= "text-blue-400 underline"><small>Click here?</small></Link>  </p>
+    <div className="flex gap-2 my-4">
       <Button onPress={() => handleSocialSignIn("google")}>
         Sign in with Google
       </Button>
