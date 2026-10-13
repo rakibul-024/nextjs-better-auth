@@ -1,8 +1,8 @@
 'use client'
 import React, {useState} from 'react';
 import {Eye, EyeSlash} from "@gravity-ui/icons";
-import {Button, Description, FieldError, Form, Input, InputGroup, Label, TextField} from "@heroui/react";
-import { signIn, signUp } from '@/lib/auth-client';
+import {Button, Description, FieldError, Form, Input, InputGroup, Label, TextField, toast} from "@heroui/react";
+import { sendVerificationEmail, signIn, signUp } from '@/lib/auth-client';
 
 
 
@@ -14,17 +14,63 @@ const SignUpPage = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
-    // Convert FormData to plain object
- console.log('data from the form',data);
- 
+    try {
+      const { error: signUpError } = await signUp.email({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
 
-const { data: resData, error } = await signUp.email({
-      name: data.name,        
-      email: data.email,       
-      password: data.password, 
-    });
+      if (signUpError) {
+        console.error("Sign up failed", signUpError);
+        if (signUpError.code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
+          const { error: emailError } = await sendVerificationEmail({
+            email: data.email,
+            callbackURL: "/",
+          });
 
-    console.log( resData, error );
+          if (emailError) {
+            console.error("Could not resend verification email", emailError);
+            toast.danger("Could not send the verification email", {
+              description: emailError.message,
+            });
+            return;
+          }
+
+          toast.success("Verification email sent", {
+            description: "Check your inbox and spam folder for the verification link.",
+          });
+          return;
+        }
+
+        toast.danger("Could not create your account", {
+          description: signUpError.message,
+        });
+        return;
+      }
+
+      const { error: emailError } = await sendVerificationEmail({
+        email: data.email,
+        callbackURL: "/",
+      });
+
+      if (emailError) {
+        console.error("Could not send verification email", emailError);
+        toast.danger("Could not send the verification email", {
+          description: emailError.message,
+        });
+        return;
+      }
+
+      toast.success("Verification email sent", {
+        description: "Check your inbox and spam folder for the verification link.",
+      });
+    } catch (error) {
+      console.error("Sign up or verification email failed", error);
+      toast.danger("Could not send the verification email", {
+        description: "Please try again later.",
+      });
+    }
 
   };
 

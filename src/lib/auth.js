@@ -14,14 +14,24 @@ export const auth = betterAuth({
     requireEmailVerification: true,
   },
   emailVerification: {
- sendVerificationEmail: async ( { user, url, token }, request) => {
-void resend.emails.send({
-   from: 'Acme <onboarding@example.com>',
-  to: user.email,
-        subject: 'Verify your email address',
-        html: `Click <a href="${url}">here</a> to verify your email.`,
-});
+    sendVerificationEmail: async ({ user, url }) => {
+      const { error } = await resend.emails.send({
+        from: "onboarding@resend.dev",
+        to: user.email,
+        subject: "Verify your email address",
+        html: `<h1>Please verify your email address</h1>
+          <p>Click <a href="${url}">here</a> to verify your email.</p>`,
+      });
 
+      if (error) {
+        console.error("Resend rejected the verification email", error);
+        throw new Error(`Resend failed to send verification email: ${error.message}`);
+      }
+    },
+    sendOnSignUp: false,
+    sendOnSignIn: false,
+    autoSignInAfterVerification: true,
+    expiresIn: 7 * 24 * 60 * 60,
   },
   socialProviders: {
   google:{

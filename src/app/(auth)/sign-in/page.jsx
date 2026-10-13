@@ -1,5 +1,5 @@
 "use client";
-import { signIn } from "@/lib/auth-client";
+import { sendVerificationEmail, signIn } from "@/lib/auth-client";
 import {useState} from "react";
 import {Eye, EyeSlash} from "@gravity-ui/icons";
 import {Button, Description, FieldError, Form, Input, InputGroup, Label, TextField, toast} from "@heroui/react";
@@ -45,7 +45,25 @@ const SignInPage = () => {
       if (error) {
         sessionStorage.removeItem("show-login-toast");
         console.error("Email sign in failed", error);
-        toast.danger("Sign in failed", { description: error.message });
+        if (error.code === "EMAIL_NOT_VERIFIED") {
+          const { error: emailError } = await sendVerificationEmail({
+            email: data.email,
+            callbackURL: "/",
+          });
+
+          if (emailError) {
+            console.error("Could not resend verification email", emailError);
+            toast.danger("Could not send verification email", {
+              description: emailError.message,
+            });
+          } else {
+            toast.success("Verification email sent", {
+              description: "Check your inbox and spam folder for the verification link.",
+            });
+          }
+        } else {
+          toast.danger("Sign in failed", { description: error.message });
+        }
       }
     } catch (error) {
       sessionStorage.removeItem("show-login-toast");
