@@ -1,6 +1,6 @@
 'use client';
-import { useState } from "react";
-import { Link, Button,Spinner } from "@heroui/react";
+import { useEffect, useState } from "react";
+import { Link, Button, Spinner, toast } from "@heroui/react";
 import { signOut, useSession } from "@/lib/auth-client";
 
 export default function Navber() {
@@ -8,6 +8,33 @@ export default function Navber() {
 
 
   const {data: session, pending} = useSession();
+
+  useEffect(() => {
+    if (
+      session?.user &&
+      sessionStorage.getItem("show-login-toast") === "true"
+    ) {
+      sessionStorage.removeItem("show-login-toast");
+      toast.success("You are signed in");
+    }
+  }, [session]);
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await signOut();
+
+      if (error) {
+        console.error("Sign out failed", error);
+        toast.danger("Sign out failed", { description: error.message });
+        return;
+      }
+
+      toast.success("You are signed out");
+    } catch (error) {
+      console.error("Sign out failed", error);
+      toast.danger("Sign out failed", { description: "Please try again." });
+    }
+  };
 
   console.log(' user session form the navbar',session);
   if (pending) {
@@ -42,7 +69,7 @@ export default function Navber() {
       {session?.user ? (
         <>
           <span> Welcome {session.user?.name}</span>
-          <Button onClick={() => signOut()}>Sign Out</Button>
+          <Button onPress={handleSignOut}>Sign Out</Button>
         </>
       ) : (
         <>

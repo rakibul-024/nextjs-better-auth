@@ -2,42 +2,56 @@
 import { signIn } from "@/lib/auth-client";
 import {useState} from "react";
 import {Eye, EyeSlash} from "@gravity-ui/icons";
-import {Button, Description, FieldError, Form, Input, InputGroup, Label, TextField} from "@heroui/react";
+import {Button, Description, FieldError, Form, Input, InputGroup, Label, TextField, toast} from "@heroui/react";
 import React from 'react';
 
 const SignInPage = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   const handleSocialSignIn = async (provider) => {
-    const { data, error } = await signIn.social({
-      provider,
-      callbackURL: "/",
-    });
+    sessionStorage.setItem("show-login-toast", "true");
+    try {
+      const { error } = await signIn.social({
+        provider,
+        callbackURL: "/",
+      });
 
-    if (error) {
+      if (error) {
+        sessionStorage.removeItem("show-login-toast");
+        console.error(`Failed to sign in with ${provider}`, error);
+        toast.danger("Sign in failed", { description: error.message });
+      }
+    } catch (error) {
+      sessionStorage.removeItem("show-login-toast");
       console.error(`Failed to sign in with ${provider}`, error);
-      return;
+      toast.danger("Sign in failed", { description: "Please try again." });
     }
-
-    console.log(`Signed in with ${provider}`, data);
   };
 
      const onSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
-  console.log('data from the  sign in form',data);
 
-
-
- const { data: resData, error } = await signIn.email({
+    sessionStorage.setItem("show-login-toast", "true");
+    try {
+      const { error } = await signIn.email({
             email: data.email,
             password: data.password,
             rememberMe: true,
             callbackURL: '/'
-        })
+      });
 
-        console.log('after submit', resData, error);
+      if (error) {
+        sessionStorage.removeItem("show-login-toast");
+        console.error("Email sign in failed", error);
+        toast.danger("Sign in failed", { description: error.message });
+      }
+    } catch (error) {
+      sessionStorage.removeItem("show-login-toast");
+      console.error("Email sign in failed", error);
+      toast.danger("Sign in failed", { description: "Please try again." });
+    }
 
      }
 

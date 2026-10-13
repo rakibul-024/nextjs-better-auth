@@ -1,5 +1,6 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
+import { ToastProvider } from "@heroui/react";
 import "./globals.css";
 import Navber from "./Navber/page";
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
 
 
         <main>{children}</main>
+        <ToastProvider placement="top-right"></ToastProvider>
       </body>
     </html>
   );
