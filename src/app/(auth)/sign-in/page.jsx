@@ -1,5 +1,5 @@
 "use client";
-import { sendVerificationEmail, signIn } from "@/lib/auth-client";
+import { sendVerificationEmail, signIn, signOut, useSession } from "@/lib/auth-client";
 import {useState} from "react";
 import {Eye, EyeSlash} from "@gravity-ui/icons";
 import {Button, Description, FieldError, Form, Input, InputGroup, Label, Link, TextField, toast} from "@heroui/react";
@@ -7,13 +7,33 @@ import React from 'react';
 
 const SignInPage = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const { data: session, pending: sessionPending } = useSession();
 
   const handleSocialSignIn = async (provider) => {
-    sessionStorage.setItem("show-login-toast", "true");
     try {
+      if (sessionPending) {
+        toast.info("Please wait", {
+          description: "Your current sign-in status is still loading.",
+        });
+        return;
+      }
+
+      if (session?.user) {
+        const { error: signOutError } = await signOut();
+        if (signOutError) {
+          console.error("Could not end the current session before OAuth sign in", signOutError);
+          toast.danger("Could not start sign in", {
+            description: signOutError.message,
+          });
+          return;
+        }
+      }
+
+      sessionStorage.setItem("show-login-toast", "true");
       const { error } = await signIn.social({
         provider,
         callbackURL: "/",
+        errorCallbackURL: "/sign-in",
       });
 
       if (error) {

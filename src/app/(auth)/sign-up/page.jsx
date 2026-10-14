@@ -2,13 +2,14 @@
 import React, {useState} from 'react';
 import {Eye, EyeSlash} from "@gravity-ui/icons";
 import {Button, Description, FieldError, Form, Input, InputGroup, Label, TextField, toast} from "@heroui/react";
-import { sendVerificationEmail, signIn, signUp } from '@/lib/auth-client';
+import { sendVerificationEmail, signIn, signOut, signUp, useSession } from '@/lib/auth-client';
 
 
 
 
 const SignUpPage = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const { data: session, pending: sessionPending } = useSession();
 
      const onSubmit = async (e) => {
     e.preventDefault();
@@ -75,17 +76,44 @@ const SignUpPage = () => {
   };
 
   const handleSocialSignIn = async (provider) => {
-    const { data, error } = await signIn.social({
-      provider,
-      callbackURL: "/",
-    });
+    try {
+      if (sessionPending) {
+        toast.info("Please wait", {
+          description: "Your current sign-in status is still loading.",
+        });
+        return;
+      }
 
-    if (error) {
+      if (session?.user) {
+        const { error: signOutError } = await signOut();
+        if (signOutError) {
+          console.error("Could not end the current session before OAuth signup", signOutError);
+          toast.danger("Could not start sign up", {
+            description: signOutError.message,
+          });
+          return;
+        }
+      }
+
+      const { error } = await signIn.social({
+        provider,
+        callbackURL: "/",
+        errorCallbackURL: "/sign-up",
+        requestSignUp: true,
+      });
+
+      if (error) {
+        console.error(`Failed to sign in with ${provider}`, error);
+        toast.danger(`${provider} sign up failed`, {
+          description: error.message,
+        });
+      }
+    } catch (error) {
       console.error(`Failed to sign in with ${provider}`, error);
-      return;
+      toast.danger(`${provider} sign up failed`, {
+        description: "Please try again.",
+      });
     }
-
-    console.log(`Signed in with ${provider}`, data);
   };
 
     return (
