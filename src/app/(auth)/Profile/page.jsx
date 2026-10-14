@@ -11,6 +11,7 @@ import {
   Form,
   Input,
   Label,
+  Link,
   TextField,
   toast,
 } from "@heroui/react";
@@ -48,16 +49,33 @@ export default function ProfilePage() {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
+    const newPassword = formData.get("newPassword");
+    const confirmPassword = formData.get("confirmPassword");
+
+    if (newPassword !== confirmPassword) {
+      toast.danger("Could not change your password", {
+        description: "The new password and confirmation do not match.",
+      });
+      return;
+    }
 
     try {
       const { error } = await changePassword({
         currentPassword: formData.get("currentPassword"),
-        newPassword: formData.get("newPassword"),
+        newPassword,
         revokeOtherSessions: true,
       });
 
       if (error) {
         console.error("Failed to change password", error);
+        if (error.code === "CREDENTIAL_ACCOUNT_NOT_FOUND") {
+          toast.danger("No password is set for this account", {
+            description:
+              "If you signed up with Google or GitHub, use the password reset link below to set one first.",
+          });
+          return;
+        }
+
         toast.danger("Could not change your password", {
           description: error.message,
         });
@@ -112,7 +130,11 @@ export default function ProfilePage() {
       <Form className="w-full max-w-96" onSubmit={handleChangePassword}>
         <Fieldset>
           <Fieldset.Legend>Change Password</Fieldset.Legend>
-          <Description>Enter your current password and choose a new one.</Description>
+          <Description>
+            Enter your current password and choose a new password.
+            {" "}If you use Google or GitHub and have not set a password yet,{" "}
+            <Link href="/forgot-password">set one with password reset</Link>.
+          </Description>
           <FieldGroup>
             <TextField isRequired name="currentPassword" type="password">
               <Label>Current password</Label>
@@ -134,6 +156,21 @@ export default function ProfilePage() {
             >
               <Label>New password</Label>
               <Input placeholder="Enter new password" />
+              <FieldError />
+            </TextField>
+            <TextField
+              isRequired
+              minLength={8}
+              name="confirmPassword"
+              type="password"
+              validate={(value) =>
+                value.length < 8
+                  ? "Password must be at least 8 characters"
+                  : null
+              }
+            >
+              <Label>Confirm new password</Label>
+              <Input placeholder="Re-enter new password" />
               <FieldError />
             </TextField>
           </FieldGroup>

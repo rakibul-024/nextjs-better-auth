@@ -2,14 +2,13 @@
 import React, {useState} from 'react';
 import {Eye, EyeSlash} from "@gravity-ui/icons";
 import {Button, Description, FieldError, Form, Input, InputGroup, Label, TextField, toast} from "@heroui/react";
-import { sendVerificationEmail, signIn, signOut, signUp, useSession } from '@/lib/auth-client';
+import { sendVerificationEmail, signIn, signUp } from '@/lib/auth-client';
 
 
 
 
 const SignUpPage = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const { data: session, pending: sessionPending } = useSession();
 
      const onSubmit = async (e) => {
     e.preventDefault();
@@ -75,26 +74,8 @@ const SignUpPage = () => {
 
   };
 
-  const handleSocialSignIn = async (provider) => {
+  const handleSocialSignUp = async (provider) => {
     try {
-      if (sessionPending) {
-        toast.info("Please wait", {
-          description: "Your current sign-in status is still loading.",
-        });
-        return;
-      }
-
-      if (session?.user) {
-        const { error: signOutError } = await signOut();
-        if (signOutError) {
-          console.error("Could not end the current session before OAuth signup", signOutError);
-          toast.danger("Could not start sign up", {
-            description: signOutError.message,
-          });
-          return;
-        }
-      }
-
       const { error } = await signIn.social({
         provider,
         callbackURL: "/",
@@ -103,13 +84,13 @@ const SignUpPage = () => {
       });
 
       if (error) {
-        console.error(`Failed to sign in with ${provider}`, error);
+        console.error(`Failed to sign up with ${provider}`, error);
         toast.danger(`${provider} sign up failed`, {
           description: error.message,
         });
       }
     } catch (error) {
-      console.error(`Failed to sign in with ${provider}`, error);
+      console.error(`Failed to sign up with ${provider}`, error);
       toast.danger(`${provider} sign up failed`, {
         description: "Please try again.",
       });
@@ -204,11 +185,11 @@ const SignUpPage = () => {
       </Form>
              <p>or</p>
       <div className="flex gap-2">
-        <Button onPress={() => handleSocialSignIn("google")}>
-          Sign in with Google
+        <Button onPress={() => handleSocialSignUp("google")}>
+          Sign up with Google
         </Button>
-        <Button onPress={() => handleSocialSignIn("github")}>
-          Sign in with GitHub
+        <Button onPress={() => handleSocialSignUp("github")}>
+          Sign up with GitHub
         </Button>
       </div>
       </div>
